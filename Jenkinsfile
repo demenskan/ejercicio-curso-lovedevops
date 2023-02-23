@@ -1,7 +1,7 @@
 pipeline {
 
   environment {
-    dockerimagename = "udecdj2022/baymax"
+    dockerimagename = "demenskan/lovedevops"
     dockerImage = ""
   }
 
@@ -11,7 +11,7 @@ pipeline {
 
     stage('Checkout Code') {
       steps {
-        git credentialsId: 'githubhernan', url: 'https://github.com/udecdj2022/baymax.git', branch:'main'
+        git credentialsId: 'demenskan_at_github', url: 'https://github.com/demenskan/ejercicio-curso-lovedevops.git', branch:'main'
       }
     }
 
@@ -25,12 +25,12 @@ pipeline {
 
     stage('Pushing Image') {
       environment {
-               registryCredential = 'dockerhubhaep'
+               registryCredential = 'demenskan_at_dockerhub'
            }
       steps{
         script {
           docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
-            dockerImage.push("vpipeline")
+            dockerImage.push("v1")
           }
         }
       }
@@ -40,12 +40,12 @@ pipeline {
    steps{
     sshagent(['sshsanchez'])
     {
-     sh 'scp -r -o StrictHostKeyChecking=no deployment-baymax.yaml digesetuser@148.213.1.131:/home/digesetuser/'
+     sh 'scp -r -o StrictHostKeyChecking=no demenskan-deployment.yml digesetuser@148.213.1.131:/home/digesetuser/'
       script{
         try{
-           sh 'ssh digesetuser@148.213.1.131 microk8s.kubectl apply -f  deployment-baymax.yaml --kubeconfig=/home/digesetuser/.kube/config'
-           sh 'ssh digesetuser@148.213.1.131 microk8s.kubectl rollout restart deployment baymax -n baymax --kubeconfig=/home/digesetuser/.kube/config'
-           sh 'ssh digesetuser@148.213.1.131 microk8s.kubectl rollout status deployment baymax -n baymax --kubeconfig=/home/digesetuser/.kube/config'
+           sh 'ssh digesetuser@148.213.1.131 microk8s.kubectl apply -f  demenskan-deployment.yml --kubeconfig=/home/digesetuser/.kube/config'
+           sh 'ssh digesetuser@148.213.1.131 microk8s.kubectl rollout restart deployment demenskan -n demenskan --kubeconfig=/home/digesetuser/.kube/config'
+           sh 'ssh digesetuser@148.213.1.131 microk8s.kubectl rollout status deployment demenskan -n demenskan --kubeconfig=/home/digesetuser/.kube/config'
           }catch(error)
        {}
      }

@@ -1,0 +1,50 @@
+kind: Namespace
+metadata:
+  name: demenskan
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demenskan
+  namespace: demenskan
+spec:
+  selector:
+   matchLabels:
+    app: demenskan
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demenskan
+        role: demenskan
+    spec:
+      containers:
+        - name: demenskan
+          image: demenskan/lovedevops:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: demenskan
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demenskan
+  namespace: demenskan
+  labels:
+    app: demenskan
+spec:
+  selector:
+   app: demenskan
+  type: ExternalName
+  externalName: nginx-internal.service-ns.svc.cluster.local
+  type: ClusterIP
+  ports:
+   - name: http
+     port: 80
+     protocol: TCP
+     targetPort: 80
+  selector:
+    role: demenskan
